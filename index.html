@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AssetLine — Rental &amp; Asset Booking Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="shell">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div>
+        <div class="brand-name">AssetLine</div>
+        <div class="brand-sub">Rental &amp; booking platform</div>
+      </div>
+    </div>
+
+    <nav id="navHost"></nav>
+
+    <div class="sidebar-foot">Signed in as <span id="footRole">Platform Admin</span></div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div>
+        <h1 class="page-title" id="pageTitle">Marketplace</h1>
+        <div class="page-caption" id="pageCaption">Browse assets available to book</div>
+      </div>
+      <div class="search-box">
+        <span>⌕</span>
+        <input type="text" id="globalSearch" placeholder="Search assets, bookings, users…">
+      </div>
+      <div class="topbar-right">
+        <button class="bell" title="Notifications">🔔<span class="dot"></span></button>
+        <div class="role-switch">
+          <div class="role-pill" id="rolePill">
+            <span class="role-avatar" id="roleAvatar">PA</span>
+            <span id="roleLabel">Platform Admin</span>
+            <span>▾</span>
+          </div>
+          <div class="role-menu" id="roleMenu"></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalHost"></div></div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
