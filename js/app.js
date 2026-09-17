@@ -56,17 +56,17 @@ let state = {
   assetFilter: 'all',
   bookingTab: 'requested',
   selectedAssetId: 'AST-1042',
-  calMonth: 8, calYear: 2026, // Sept 2026 (0-index month =8)
-};
+  calMonth: 8, calYear: 2026, // Sept 2026 (0-index month =8)  loggedIn: false,
+  authMode: 'login',};
 
 const assets = [
-  {id:'AST-1042', name:'Ford Transit Cargo Van', type:'Vehicle', owner:'M. Sok', grade:'A', rate:68, period:'day', status:'approved', verified:true, emoji:'🚐', blocked:[3,4,5,17,18], booked:[10,11,12]},
-  {id:'AST-2091', name:'Canon R5 Camera Kit', type:'Equipment', owner:'L. Chan', grade:'A-', rate:32, period:'day', status:'approved', verified:true, emoji:'📷', blocked:[1,2], booked:[8,9]},
-  {id:'AST-3310', name:'Riverside Event Pavilion', type:'Property', owner:'D. Meas', grade:'B+', rate:410, period:'day', status:'approved', verified:true, emoji:'🏛️', blocked:[20,21,22], booked:[]},
-  {id:'AST-4177', name:'Bobcat Mini Excavator', type:'Equipment', owner:'S. Vann', grade:'B', rate:145, period:'day', status:'pending', verified:false, emoji:'🚜', blocked:[], booked:[]},
-  {id:'AST-5528', name:'Toyota Hiace 12-seat', type:'Vehicle', owner:'M. Sok', grade:'A', rate:55, period:'day', status:'approved', verified:true, emoji:'🚌', blocked:[6], booked:[14,15]},
-  {id:'AST-6650', name:'Downtown Studio Loft', type:'Property', owner:'P. Ratana', grade:'A', rate:95, period:'day', status:'approved', verified:true, emoji:'🏠', blocked:[], booked:[2,3]},
-  {id:'AST-7002', name:'DJI Ronin Gimbal Rig', type:'Equipment', owner:'L. Chan', grade:'A-', rate:24, period:'day', status:'draft', verified:false, emoji:'🎥', blocked:[], booked:[]},
+  {id:'AST-1042', name:'Ford Transit Cargo Van', type:'Vehicle', owner:'M. Sok', grade:'A', rate:68, period:'day', status:'approved', verified:true, emoji:'🚐', image:'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=900&q=80', blocked:[3,4,5,17,18], booked:[10,11,12]},
+  {id:'AST-2091', name:'Canon R5 Camera Kit', type:'Equipment', owner:'L. Chan', grade:'A-', rate:32, period:'day', status:'approved', verified:true, emoji:'📷', image:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80', blocked:[1,2], booked:[8,9]},
+  {id:'AST-3310', name:'Riverside Event Pavilion', type:'Property', owner:'D. Meas', grade:'B+', rate:410, period:'day', status:'approved', verified:true, emoji:'🏛️', image:'https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=900&q=80', blocked:[20,21,22], booked:[]},
+  {id:'AST-4177', name:'Bobcat Mini Excavator', type:'Equipment', owner:'S. Vann', grade:'B', rate:145, period:'day', status:'pending', verified:false, emoji:'🚜', image:'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80', blocked:[], booked:[]},
+  {id:'AST-5528', name:'Toyota Hiace 12-seat', type:'Vehicle', owner:'M. Sok', grade:'A', rate:55, period:'day', status:'approved', verified:true, emoji:'🚌', image:'https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=900&q=80', blocked:[6], booked:[14,15]},
+  {id:'AST-6650', name:'Downtown Studio Loft', type:'Property', owner:'P. Ratana', grade:'A', rate:95, period:'day', status:'approved', verified:true, emoji:'🏠', image:'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80', blocked:[], booked:[2,3]},
+  {id:'AST-7002', name:'DJI Ronin Gimbal Rig', type:'Equipment', owner:'L. Chan', grade:'A-', rate:24, period:'day', status:'draft', verified:false, emoji:'🎥', image:'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80', blocked:[], booked:[]},
 ];
 
 const bookings = [
@@ -270,7 +270,10 @@ function renderMarketplace(c){
 
   list.forEach(a=>{
     const card = el(`<div class="asset-card">
-      <div class="asset-thumb">${a.emoji}<span class="grade">Grade ${a.grade}</span></div>
+      <div class="asset-thumb">
+        <img src="${a.image || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'}" alt="${a.name}" loading="lazy">
+        <span class="grade">Grade ${a.grade}</span>
+      </div>
       <div class="asset-body">
         <div>
           <div class="asset-name">${a.name}</div>
@@ -792,7 +795,127 @@ function renderActivity(c){
   toolbar.querySelector('#exportLog').addEventListener('click', ()=> toast('Activity log exported as CSV'));
 }
 
-/* ---------- INIT ---------- */
-renderNav();
-renderRoleMenu();
-render();
+function renderAuthScreen(){
+  const panel = el(`
+    <div class="auth-panel">
+      <div class="auth-header">
+        <div class="auth-brand">
+          <div class="auth-mark">A</div>
+          <div>
+            <div class="brand-name" style="font-size:24px; color:var(--navy-900);">AssetLine</div>
+          </div>
+        </div>
+        <h1 class="auth-title">Welcome back</h1>
+        <div class="auth-sub">Access your marketplace, bookings, and asset tools.</div>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth="login" type="button">Login</button>
+        <button class="auth-tab" data-auth="register" type="button">Register</button>
+      </div>
+
+      <form class="auth-form" id="authForm">
+        <div class="auth-field auth-register-only" style="display:none;">
+          <label>Full name</label>
+          <input type="text" id="authName" placeholder="Your full name">
+        </div>
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="authEmail" placeholder="you@example.com" required>
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input type="password" id="authPassword" placeholder="Enter your password" required>
+        </div>
+        <div class="auth-field auth-register-only" style="display:none;">
+          <label>Role</label>
+          <select id="authRole">
+            <option value="admin">Platform Admin</option>
+            <option value="owner">Asset Owner</option>
+            <option value="renter">Verified Renter</option>
+            <option value="inspector">Inspector</option>
+            <option value="finance">Finance Manager</option>
+          </select>
+        </div>
+        <button class="btn btn-primary auth-cta" type="submit" id="authSubmit">Sign in</button>
+      </form>
+
+      <div class="auth-foot">
+        <span id="authFootText">Need an account?</span>
+        <button type="button" id="authSwitch">Create one</button>
+      </div>
+    </div>
+  `);
+
+  const screen = $('#authScreen');
+  screen.innerHTML = ''; screen.appendChild(panel);
+
+  const authTabs = panel.querySelectorAll('.auth-tab');
+  const registerFields = panel.querySelectorAll('.auth-register-only');
+  const authFootText = panel.querySelector('#authFootText');
+  const authSwitch = panel.querySelector('#authSwitch');
+  const authTitle = panel.querySelector('.auth-title');
+  const authSub = panel.querySelector('.auth-sub');
+  const authSubmit = panel.querySelector('#authSubmit');
+
+  function applyAuthMode(mode){
+    state.authMode = mode;
+    const isRegister = mode === 'register';
+    authTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.auth === mode));
+    registerFields.forEach(field => field.style.display = isRegister ? 'flex' : 'none');
+    authTitle.textContent = isRegister ? 'Create your account' : 'Welcome back';
+    authSub.textContent = isRegister ? 'Set up your workspace and start listing or booking assets.' : 'Access your marketplace, bookings, and asset tools.';
+    authSubmit.textContent = isRegister ? 'Create account' : 'Sign in';
+    authFootText.textContent = isRegister ? 'Already have an account?' : 'Need an account?';
+    authSwitch.textContent = isRegister ? 'Log in' : 'Create one';
+  }
+
+  authTabs.forEach(tab => tab.addEventListener('click', () => applyAuthMode(tab.dataset.auth)));
+  authSwitch.addEventListener('click', () => applyAuthMode(state.authMode === 'login' ? 'register' : 'login'));
+
+  panel.querySelector('#authForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = $('#authEmail').value.trim();
+    const password = $('#authPassword').value;
+
+    if (!email || !password || (state.authMode === 'register' && !$('#authName').value.trim())) {
+      toast('Please complete the required fields');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast('Password should be at least 6 characters');
+      return;
+    }
+
+    state.loggedIn = true;
+    document.body.classList.remove('auth-mode');
+    if (state.authMode === 'register') {
+      const selectedRole = $('#authRole').value;
+      state.role = selectedRole;
+      const roleInfo = ROLES.find(r => r.id === selectedRole);
+      $('#roleAvatar').textContent = roleInfo.init;
+      $('#roleLabel').textContent = roleInfo.label;
+      $('#footRole').textContent = roleInfo.label;
+    }
+    toast(state.authMode === 'register' ? 'Account created successfully' : 'Login successful');
+    renderNav();
+    renderRoleMenu();
+    render();
+  });
+
+  applyAuthMode(state.authMode);
+}
+
+function initializeApp(){
+  if (!state.loggedIn) {
+    renderAuthScreen();
+    return;
+  }
+  document.body.classList.remove('auth-mode');
+  renderNav();
+  renderRoleMenu();
+  render();
+}
+
+initializeApp();
